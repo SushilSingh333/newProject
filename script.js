@@ -1,0 +1,372 @@
+/* =========================================================
+   NMIMS Online Replica Scripts
+   - Smooth scrolling with fixed navbar offset
+   - Scroll reveal animations (IntersectionObserver)
+   - Enquiry form UI: disclaimer enables submit, OTP countdown
+   - Testimonial slider: autoplay + dots + buttons
+   ========================================================= */
+
+(() => {
+  const navbar = document.getElementById("siteNavbar");
+
+  /* Navbar background blur on scroll */
+  function updateNavbarChrome() {
+    if (!navbar) return;
+    const scrolled = window.scrollY > 10;
+    navbar.classList.toggle("navbar-scrolled", scrolled);
+  }
+  updateNavbarChrome();
+  window.addEventListener("scroll", updateNavbarChrome, { passive: true });
+
+  /* Always start pages at the top (fix refresh-at-bottom issue) */
+  if (window.history && "scrollRestoration" in window.history) {
+    window.history.scrollRestoration = "manual";
+  }
+  window.addEventListener("load", () => {
+    // Jump to top first to avoid restoring an old scroll position
+    window.scrollTo(0, 0);
+    
+    // Auto-open enquiry modal on page load
+    const enquiryModal = document.getElementById("enquiryModal");
+    if (enquiryModal) {
+      const modal = new bootstrap.Modal(enquiryModal, {
+        backdrop: true,
+        keyboard: true
+      });
+      // Small delay to ensure page is fully loaded
+      setTimeout(() => {
+        modal.show();
+      }, 500);
+    }
+  });
+
+  /* Smooth-scroll with fixed navbar offset */
+  const navHeight = () => (navbar ? navbar.getBoundingClientRect().height : 64);
+
+  function scrollToHash(hash) {
+    const id = (hash || "").replace("#", "");
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    const y = window.scrollY + el.getBoundingClientRect().top - (navHeight() + 12);
+    window.scrollTo({ top: y, behavior: "smooth" });
+  }
+
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const href = a.getAttribute("href");
+    if (!href || href === "#") return;
+    const target = document.getElementById(href.slice(1));
+    if (!target) return;
+    e.preventDefault();
+    scrollToHash(href);
+    history.pushState(null, "", href);
+  });
+
+  window.addEventListener("load", () => {
+    // After ensuring we are at the top, if there is a hash, scroll to that section smoothly
+    if (location.hash) scrollToHash(location.hash);
+  });
+
+  /* Scroll reveal animations */
+  const revealEls = Array.from(document.querySelectorAll(".reveal-on-scroll"));
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    revealEls.forEach((el) => io.observe(el));
+  } else {
+    revealEls.forEach((el) => el.classList.add("is-visible"));
+  }
+
+  /* Button ripple (premium micro-interaction) */
+  function attachRipple(btn) {
+    if (!btn) return;
+    btn.addEventListener("click", (e) => {
+      // Respect reduced motion
+      const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce) return;
+
+      const rect = btn.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height) * 1.2;
+      const x = e.clientX - rect.left - size / 2;
+      const y = e.clientY - rect.top - size / 2;
+
+      const span = document.createElement("span");
+      span.className = "ripple";
+      span.style.width = `${size}px`;
+      span.style.height = `${size}px`;
+      span.style.left = `${x}px`;
+      span.style.top = `${y}px`;
+      btn.appendChild(span);
+
+      window.setTimeout(() => span.remove(), 750);
+    });
+  }
+
+  /* Enquiry form interactions (supports inline + modal forms) */
+  function initEnquiryForm({ formId, disclaimerId, submitBtnId, otpBtnId }) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+
+    const disclaimer = disclaimerId ? document.getElementById(disclaimerId) : null;
+    const submitBtn = submitBtnId ? document.getElementById(submitBtnId) : null;
+    const otpBtn = otpBtnId ? document.getElementById(otpBtnId) : null;
+
+    attachRipple(submitBtn);
+    attachRipple(otpBtn);
+
+    function updateSubmitState() {
+      if (!submitBtn || !disclaimer) return;
+      submitBtn.disabled = !disclaimer.checked;
+    }
+
+    if (disclaimer) {
+      disclaimer.addEventListener("change", updateSubmitState);
+      updateSubmitState();
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      // UI replica only: keep submit disabled by policy until checkbox is checked.
+      // If enabled, we still prevent actual submission.
+    });
+
+    /* OTP button countdown (UI only, scoped per form) */
+    let otpTimer = null;
+    function startOtpCountdown(seconds = 30) {
+      if (!otpBtn) return;
+      let remaining = seconds;
+      otpBtn.disabled = true;
+      otpBtn.textContent = `Resend (${remaining}s)`;
+
+      otpTimer = window.setInterval(() => {
+        remaining -= 1;
+        if (remaining <= 0) {
+          window.clearInterval(otpTimer);
+          otpTimer = null;
+          otpBtn.disabled = false;
+          otpBtn.textContent = "Get OTP";
+          return;
+        }
+        otpBtn.textContent = `Resend (${remaining}s)`;
+      }, 1000);
+    }
+
+    if (otpBtn) {
+      otpBtn.addEventListener("click", () => {
+        if (otpTimer) return;
+        startOtpCountdown(30);
+      });
+    }
+  }
+
+  // Initialise inline enquiry form (inside hero/banner)
+  initEnquiryForm({
+    formId: "enquiryForm",
+    disclaimerId: "disclaimerCheck",
+    submitBtnId: "submitBtn",
+    otpBtnId: "otpBtn"
+  });
+
+  // Initialise popup enquiry form (modal)
+  initEnquiryForm({
+    formId: "enquiryFormModal",
+    disclaimerId: "disclaimerCheckModal",
+    submitBtnId: "submitBtnModal",
+    otpBtnId: "otpBtnModal"
+  });
+
+  /* Animated counters (statistics) */
+  function parseCounterText(text) {
+    // Supports formats like "157K+", "82K+", "8K+"
+    const raw = String(text || "").trim();
+    const hasPlus = raw.endsWith("+");
+    const clean = raw.replace("+", "").trim();
+
+    const k = /k$/i.test(clean);
+    const base = clean.replace(/k$/i, "");
+    const n = Number(base.replace(/,/g, ""));
+    if (!Number.isFinite(n)) return null;
+
+    return {
+      value: k ? n * 1000 : n,
+      suffix: (k ? "K" : "") + (hasPlus ? "+" : "")
+    };
+  }
+
+  function formatCounter(value, suffix) {
+    // If original was K-based, format back to K with no decimals for clean UI.
+    if (/K/i.test(suffix)) {
+      const k = Math.round(value / 1000);
+      return `${k}K${suffix.includes("+") ? "+" : ""}`;
+    }
+    return `${Math.round(value)}${suffix.includes("+") ? "+" : ""}`;
+  }
+
+  function animateCounter(el, target, suffix) {
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      el.textContent = formatCounter(target, suffix);
+      return;
+    }
+
+    const start = 0;
+    const duration = 1100;
+    const t0 = performance.now();
+
+    function easeOutCubic(t) {
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    function frame(now) {
+      const p = Math.min(1, (now - t0) / duration);
+      const eased = easeOutCubic(p);
+      const current = start + (target - start) * eased;
+      el.textContent = formatCounter(current, suffix);
+      if (p < 1) requestAnimationFrame(frame);
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  const statValues = Array.from(document.querySelectorAll(".stat-value"));
+  statValues.forEach((el) => {
+    const parsed = parseCounterText(el.textContent);
+    if (!parsed) return;
+    el.dataset.counterTarget = String(parsed.value);
+    el.dataset.counterSuffix = parsed.suffix;
+  });
+
+  if ("IntersectionObserver" in window && statValues.length) {
+    const counterIO = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target;
+          const target = Number(el.dataset.counterTarget || "");
+          const suffix = el.dataset.counterSuffix || "";
+          if (!Number.isFinite(target)) return;
+          if (el.dataset.counterDone === "1") return;
+          el.dataset.counterDone = "1";
+          animateCounter(el, target, suffix);
+          counterIO.unobserve(el);
+        });
+      },
+      { threshold: 0.35 }
+    );
+    statValues.forEach((el) => counterIO.observe(el));
+  }
+
+  /* Testimonial slider */
+  const track = document.getElementById("testimonialTrack");
+  const dotsWrap = document.getElementById("testimonialDots");
+  const prevBtn = document.querySelector(".slider-prev");
+  const nextBtn = document.querySelector(".slider-next");
+  attachRipple(prevBtn);
+  attachRipple(nextBtn);
+
+  if (track && dotsWrap) {
+    const slides = Array.from(track.querySelectorAll(".testimonial-card"));
+    let index = Math.max(0, slides.findIndex((s) => s.classList.contains("active")));
+    if (index < 0) index = 0;
+
+    function renderDots() {
+      dotsWrap.innerHTML = "";
+      slides.forEach((_, i) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "dot" + (i === index ? " active" : "");
+        b.setAttribute("aria-label", `Go to testimonial ${i + 1}`);
+        b.addEventListener("click", () => goTo(i, true));
+        dotsWrap.appendChild(b);
+      });
+    }
+
+    function updateActive() {
+      slides.forEach((s, i) => s.classList.toggle("active", i === index));
+      track.style.transform = `translateX(-${index * 100}%)`;
+      const dots = Array.from(dotsWrap.querySelectorAll(".dot"));
+      dots.forEach((d, i) => d.classList.toggle("active", i === index));
+    }
+
+    function clamp(n) {
+      const len = slides.length;
+      return ((n % len) + len) % len;
+    }
+
+    function goTo(i, userAction = false) {
+      index = clamp(i);
+      updateActive();
+      if (userAction) restartAuto();
+    }
+
+    if (prevBtn) prevBtn.addEventListener("click", () => goTo(index - 1, true));
+    if (nextBtn) nextBtn.addEventListener("click", () => goTo(index + 1, true));
+
+    // Autoplay
+    let auto = null;
+    function startAuto() {
+      auto = window.setInterval(() => goTo(index + 1, false), 4500);
+    }
+    function stopAuto() {
+      if (!auto) return;
+      window.clearInterval(auto);
+      auto = null;
+    }
+    function restartAuto() {
+      stopAuto();
+      startAuto();
+    }
+
+    // Pause on hover/focus for accessibility
+    const sliderRoot = track.closest(".testimonial-slider");
+    if (sliderRoot) {
+      sliderRoot.addEventListener("mouseenter", stopAuto);
+      sliderRoot.addEventListener("mouseleave", startAuto);
+      sliderRoot.addEventListener("focusin", stopAuto);
+      sliderRoot.addEventListener("focusout", startAuto);
+    }
+
+    // Swipe support (mobile)
+    let startX = null;
+    let startY = null;
+    const viewport = track.closest(".slider-viewport");
+    if (viewport) {
+      viewport.addEventListener("touchstart", (e) => {
+        const t = e.touches[0];
+        startX = t.clientX;
+        startY = t.clientY;
+      }, { passive: true });
+
+      viewport.addEventListener("touchend", (e) => {
+        if (startX == null || startY == null) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - startX;
+        const dy = t.clientY - startY;
+        startX = null;
+        startY = null;
+        if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+        goTo(index + (dx < 0 ? 1 : -1), true);
+      }, { passive: true });
+    }
+
+    renderDots();
+    updateActive();
+    startAuto();
+
+    // Keep correct position on resize
+    window.addEventListener("resize", () => updateActive());
+  }
+})();
+
