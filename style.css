@@ -1844,3 +1844,41 @@ a, button, .btn, .card, img, input, select, textarea{
     padding-bottom: 80px;
   }
 }
+
+
+/* 🔥 FORCE FIX: Phone input same as other fields (popup form) */
+.modal-enquiry-content .input-group-phone {
+  border-radius: 12px !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  background: #f9fbff !important;
+  height: 40px !important;
+  display: flex;
+  align-items: center;
+}
+
+.modal-enquiry-content .input-group-phone .country-code {
+  background: #f9fbff !important;
+  border: none !important;
+  padding: 10px 14px !important;
+  font-size: 13.5px !important;
+  font-weight: 500;
+  color: #1f4bff;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.modal-enquiry-content .input-group-phone .form-control {
+  border: none !important;
+  background: transparent !important;
+  padding: 10px 14px !important;
+  font-size: 13.5px !important;
+  height: 100%;
+  box-shadow: none !important;
+}
+
+/* Focus state (same as other inputs) */
+.modal-enquiry-content .input-group-phone:focus-within {
+  border-color: rgba(31, 75, 255, 0.7) !important;
+  box-shadow: 0 0 0 3px rgba(31, 75, 255, 0.12) !important;
+}
