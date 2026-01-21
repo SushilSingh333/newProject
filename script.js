@@ -268,105 +268,39 @@
     statValues.forEach((el) => counterIO.observe(el));
   }
 
-  /* Testimonial slider */
-  const track = document.getElementById("testimonialTrack");
-  const dotsWrap = document.getElementById("testimonialDots");
-  const prevBtn = document.querySelector(".slider-prev");
-  const nextBtn = document.querySelector(".slider-next");
-  attachRipple(prevBtn);
-  attachRipple(nextBtn);
-
-  if (track && dotsWrap) {
-    const slides = Array.from(track.querySelectorAll(".testimonial-card"));
-    let index = Math.max(0, slides.findIndex((s) => s.classList.contains("active")));
-    if (index < 0) index = 0;
-
-    function renderDots() {
-      dotsWrap.innerHTML = "";
-      slides.forEach((_, i) => {
-        const b = document.createElement("button");
-        b.type = "button";
-        b.className = "dot" + (i === index ? " active" : "");
-        b.setAttribute("aria-label", `Go to testimonial ${i + 1}`);
-        b.addEventListener("click", () => goTo(i, true));
-        dotsWrap.appendChild(b);
-      });
+  /* Initialize Swiper for Testimonials */
+  const testimonialSwiper = new Swiper('.mySwiper', {
+    effect: 'coverflow',
+    grabCursor: true,
+    centeredSlides: true,
+    slidesPerView: 2,
+    loop: true,
+    autoplay: {
+      delay: 3000,
+      disableOnInteraction: false,
+    },
+    speed: 600,
+    coverflowEffect: {
+      rotate: 0,
+      stretch: 0,
+      depth: 100,
+      modifier: 1.5,
+      slideShadows: true,
+    },
+    breakpoints: {
+      320: {
+        slidesPerView: 1,
+        centeredSlides: true,
+      },
+      768: {
+        slidesPerView: 1.2,
+        centeredSlides: true,
+      },
+      1024: {
+        slidesPerView: 2,
+        centeredSlides: true,
+      }
     }
-
-    function updateActive() {
-      slides.forEach((s, i) => s.classList.toggle("active", i === index));
-      track.style.transform = `translateX(-${index * 100}%)`;
-      const dots = Array.from(dotsWrap.querySelectorAll(".dot"));
-      dots.forEach((d, i) => d.classList.toggle("active", i === index));
-    }
-
-    function clamp(n) {
-      const len = slides.length;
-      return ((n % len) + len) % len;
-    }
-
-    function goTo(i, userAction = false) {
-      index = clamp(i);
-      updateActive();
-      if (userAction) restartAuto();
-    }
-
-    if (prevBtn) prevBtn.addEventListener("click", () => goTo(index - 1, true));
-    if (nextBtn) nextBtn.addEventListener("click", () => goTo(index + 1, true));
-
-    // Autoplay
-    let auto = null;
-    function startAuto() {
-      auto = window.setInterval(() => goTo(index + 1, false), 4500);
-    }
-    function stopAuto() {
-      if (!auto) return;
-      window.clearInterval(auto);
-      auto = null;
-    }
-    function restartAuto() {
-      stopAuto();
-      startAuto();
-    }
-
-    // Pause on hover/focus for accessibility
-    const sliderRoot = track.closest(".testimonial-slider");
-    if (sliderRoot) {
-      sliderRoot.addEventListener("mouseenter", stopAuto);
-      sliderRoot.addEventListener("mouseleave", startAuto);
-      sliderRoot.addEventListener("focusin", stopAuto);
-      sliderRoot.addEventListener("focusout", startAuto);
-    }
-
-    // Swipe support (mobile)
-    let startX = null;
-    let startY = null;
-    const viewport = track.closest(".slider-viewport");
-    if (viewport) {
-      viewport.addEventListener("touchstart", (e) => {
-        const t = e.touches[0];
-        startX = t.clientX;
-        startY = t.clientY;
-      }, { passive: true });
-
-      viewport.addEventListener("touchend", (e) => {
-        if (startX == null || startY == null) return;
-        const t = e.changedTouches[0];
-        const dx = t.clientX - startX;
-        const dy = t.clientY - startY;
-        startX = null;
-        startY = null;
-        if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
-        goTo(index + (dx < 0 ? 1 : -1), true);
-      }, { passive: true });
-    }
-
-    renderDots();
-    updateActive();
-    startAuto();
-
-    // Keep correct position on resize
-    window.addEventListener("resize", () => updateActive());
-  }
+  });
 })();
 
