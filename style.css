@@ -9,13 +9,14 @@
   --font-body: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   --font-head: "Poppins", "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 
-  /* Palette (as requested) */
-  --primary: #6C63FF;
-  --secondary: #A5B4FC;
-  --accent: #F9A8D4;
-  --bg: #F8FAFF;
-  --text-dark: #1E293B;
-  --text-light: #64748B;
+  /* Palette (premium blue-first) */
+  --primary: #1f4bff;
+  --primary-strong: #193fcc;
+  --secondary: #4f8dff;
+  --accent: #0ea5e9;
+  --bg: #f6f8fc;
+  --text-dark: #0f172a;
+  --text-light: #64748b;
 
   /* Surfaces */
   --card: rgba(255, 255, 255, 0.70);
@@ -316,14 +317,11 @@ a, button, .btn, .card, img, input, select, textarea{
 }
 
 .enquiry-card{
-  background: var(--card);
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(30, 41, 59, 0.12);
-  /* Extra compact internal padding to keep card height tight */
-  padding: 12px 14px 10px;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: var(--shadow-soft);
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid rgba(31, 75, 255, 0.12);
+  padding: 18px 18px 16px;
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.12);
   transition: all var(--t-med);
 }
 
@@ -333,9 +331,11 @@ a, button, .btn, .card, img, input, select, textarea{
 }
 
 .enquiry-title{
-  font-size: 15px;
-  font-weight: 650;
-  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary-strong);
+  letter-spacing: -0.2px;
+  margin: 0 0 12px;
 }
 
 .form-label{
@@ -344,13 +344,18 @@ a, button, .btn, .card, img, input, select, textarea{
   margin-bottom: 2px;
 }
 
+.enquiry-grid{
+  --bs-gutter-y: 0.75rem;
+}
+
 .form-control-rounded,
 .form-control.form-control-rounded,
 .form-select.form-control-rounded{
-  border-radius: 999px;
-  border: 1px solid rgba(30, 41, 59, 0.14);
-  padding: 8px 12px;
-  font-size: 13px;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  padding: 10px 14px;
+  font-size: 13.5px;
+  background: #f9fbff;
   transition: all var(--t-med);
 }
 
@@ -390,14 +395,20 @@ a, button, .btn, .card, img, input, select, textarea{
 
 .form-control-rounded:focus,
 .form-select.form-control-rounded:focus{
-  border-color: rgba(108, 99, 255, 0.55);
-  box-shadow: var(--shadow-glow);
+  border-color: rgba(31, 75, 255, 0.7);
+  box-shadow: 0 0 0 3px rgba(31, 75, 255, 0.12);
+  background: #fff;
+}
+
+.enquiry-card .form-control:invalid:not(:focus):not(:placeholder-shown),
+.enquiry-card .form-select:invalid:not(:focus){
+  border-color: rgba(239, 68, 68, 0.35);
 }
 
 .input-group-rounded{
-  border-radius: 999px;
+  border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(30, 41, 59, 0.14);
+  border: 1px solid rgba(15, 23, 42, 0.12);
   transition: all var(--t-med);
   display: flex;
   align-items: stretch;
@@ -405,8 +416,8 @@ a, button, .btn, .card, img, input, select, textarea{
 .input-group-rounded .form-control{
   border: 0;
   /* Match other inputs to reduce height */
-  padding: 8px 12px;
-  font-size: 13px;
+  padding: 10px 12px;
+  font-size: 13.5px;
   flex: 1;
   min-width: 0;
   width: auto;
@@ -416,8 +427,22 @@ a, button, .btn, .card, img, input, select, textarea{
   outline: none;
 }
 .input-group-rounded:focus-within{
-  border-color: rgba(108, 99, 255, 0.55);
-  box-shadow: var(--shadow-glow);
+  border-color: rgba(31, 75, 255, 0.7);
+  box-shadow: 0 0 0 3px rgba(31, 75, 255, 0.12);
+  background: #fff;
+}
+
+.input-group-phone .input-group-text.country-code{
+  border: 0;
+  background: #e9efff;
+  color: var(--primary-strong);
+  font-weight: 600;
+  padding: 10px 12px;
+  border-right: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 10px 0 0 10px;
+}
+.input-group-phone .form-control{
+  border-radius: 0 10px 10px 0;
 }
 
 .btn-otp{
@@ -451,9 +476,9 @@ a, button, .btn, .card, img, input, select, textarea{
   border-radius: 999px;
   padding: 8px 14px;
   font-weight: 650;
-  background: #d1d5db;
-  color: #6b7280;
-  border: 0;
+  background: #dce3ff;
+  color: var(--primary-strong);
+  border: 1px solid rgba(31, 75, 255, 0.12);
   transition: all var(--t-med);
 }
 
@@ -475,7 +500,7 @@ a, button, .btn, .card, img, input, select, textarea{
 }
 .btn-submit:not([disabled]):hover{
   transform: translateY(-2px);
-  box-shadow: 0 18px 42px rgba(108, 99, 255, 0.22);
+  box-shadow: 0 18px 42px rgba(31, 75, 255, 0.25);
 }
 
 .shadow-soft{
@@ -499,6 +524,8 @@ a, button, .btn, .card, img, input, select, textarea{
   background: rgba(255, 255, 255, 0.98);
   border-bottom: 1px solid rgba(30, 41, 59, 0.08);
   padding: 16px 18px;
+  justify-content: center;
+  position: relative;
 }
 /* Modal body - form styling (removed nested card) */
 .modal-enquiry-content .modal-body{
@@ -524,6 +551,9 @@ a, button, .btn, .card, img, input, select, textarea{
   opacity: 0.75;
   filter: brightness(0.85);
   transition: all var(--t-med);
+  position: absolute;
+  right: 14px;
+  top: 14px;
 }
 .modal-enquiry-content .btn-close:hover,
 .modal-enquiry-content .btn-close:focus{

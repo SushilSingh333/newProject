@@ -175,16 +175,14 @@
   initEnquiryForm({
     formId: "enquiryForm",
     disclaimerId: "disclaimerCheck",
-    submitBtnId: "submitBtn",
-    otpBtnId: "otpBtn"
+    submitBtnId: "submitBtn"
   });
 
   // Initialise popup enquiry form (modal)
   initEnquiryForm({
     formId: "enquiryFormModal",
     disclaimerId: "disclaimerCheckModal",
-    submitBtnId: "submitBtnModal",
-    otpBtnId: "otpBtnModal"
+    submitBtnId: "submitBtnModal"
   });
 
   /* Animated counters (statistics) */
