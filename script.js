@@ -185,6 +185,46 @@
     submitBtnId: "submitBtnModal"
   });
 
+  /* Open enquiry modal from any specialisation card click/keypress */
+  function openEnquiryModal(programName = "") {
+    const modalEl = document.getElementById("enquiryModal");
+    if (!modalEl || typeof bootstrap === "undefined") return;
+
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl, {
+      backdrop: true,
+      keyboard: true
+    });
+
+    if (programName) {
+      const programSelect = document.getElementById("programModal");
+      if (programSelect) {
+        const match = Array.from(programSelect.options).find(
+          (opt) => opt.textContent.trim().toLowerCase() === programName.trim().toLowerCase()
+        );
+        programSelect.value = match ? match.value : "";
+      }
+    }
+
+    modal.show();
+  }
+
+  const specCards = Array.from(document.querySelectorAll(".spec-card"));
+  specCards.forEach((card) => {
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", "0");
+
+    const programTitle = card.querySelector(".spec-title")?.textContent?.trim() || "";
+    const activate = () => openEnquiryModal(programTitle);
+
+    card.addEventListener("click", activate);
+    card.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        activate();
+      }
+    });
+  });
+
   /* Animated counters (statistics) */
   function parseCounterText(text) {
     // Supports formats like "157K+", "82K+", "8K+"

@@ -788,6 +788,7 @@ a, button, .btn, .card, img, input, select, textarea{
   transition: all var(--t-med);
   overflow: hidden;
   position: relative;
+  cursor: pointer;
 }
 .spec-image{
   position: absolute;
@@ -815,6 +816,10 @@ a, button, .btn, .card, img, input, select, textarea{
   box-shadow: 0 16px 48px rgba(249, 168, 212, 0.12);
   border-color: rgba(249, 168, 212, 0.3);
   box-shadow: var(--shadow-elev);
+}
+.spec-card:focus-visible{
+  outline: 3px solid var(--primary);
+  outline-offset: 4px;
 }
 .spec-icon{
   width: 60px;
