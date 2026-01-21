@@ -342,3 +342,28 @@
   });
 })();
 
+
+/* Mobile brochure click -> Download + Open Enquiry Modal */
+document.addEventListener("DOMContentLoaded", () => {
+  const brochureBtn = document.getElementById("mobileBrochureBtn");
+
+  if (!brochureBtn) return;
+
+  brochureBtn.addEventListener("click", () => {
+    /* 1️⃣ Trigger brochure download */
+    const brochureLink = document.createElement("a");
+    // 🔁 change path if needed
+    brochureLink.download = "NMIMS-Online-Brochure.pdf";
+    document.body.appendChild(brochureLink);
+    brochureLink.click();
+    brochureLink.remove();
+
+    /* 2️⃣ Open enquiry modal */
+    const enquiryModal = document.getElementById("enquiryModal");
+    if (enquiryModal && typeof bootstrap !== "undefined") {
+      const modal = bootstrap.Modal.getOrCreateInstance(enquiryModal);
+      modal.show();
+    }
+  });
+});
+
