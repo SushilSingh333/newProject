@@ -25,19 +25,6 @@
   window.addEventListener("load", () => {
     // Jump to top first to avoid restoring an old scroll position
     window.scrollTo(0, 0);
-    
-    // Auto-open enquiry modal on page load
-    const enquiryModal = document.getElementById("enquiryModal");
-    if (enquiryModal) {
-      const modal = new bootstrap.Modal(enquiryModal, {
-        backdrop: true,
-        keyboard: true
-      });
-      // Small delay to ensure page is fully loaded
-      setTimeout(() => {
-        modal.show();
-      }, 500);
-    }
   });
 
   /* Smooth-scroll with fixed navbar offset */
@@ -306,64 +293,48 @@
     statValues.forEach((el) => counterIO.observe(el));
   }
 
-  /* Initialize Swiper for Testimonials */
-  const testimonialSwiper = new Swiper('.mySwiper', {
-    effect: 'coverflow',
-    grabCursor: true,
-    centeredSlides: true,
-    slidesPerView: 2,
-    loop: true,
-    autoplay: {
-      delay: 3000,
-      disableOnInteraction: false,
-    },
-    speed: 600,
-    coverflowEffect: {
-      rotate: 0,
-      stretch: 0,
-      depth: 100,
-      modifier: 1.5,
-      slideShadows: true,
-    },
-    breakpoints: {
-      320: {
-        slidesPerView: 1,
+  /* Initialize Swiper for Testimonials (guarded) */
+  const swiperEl = document.querySelector(".mySwiper");
+  if (swiperEl && typeof Swiper !== "undefined") {
+    // Defer initialization to next frame to avoid blocking first paint on mobile
+    requestAnimationFrame(() => {
+      new Swiper(".mySwiper", {
+        effect: "coverflow",
+        grabCursor: true,
         centeredSlides: true,
-      },
-      768: {
-        slidesPerView: 1.2,
-        centeredSlides: true,
-      },
-      1024: {
         slidesPerView: 2,
-        centeredSlides: true,
-      }
-    }
-  });
+        loop: true,
+        autoplay: {
+          delay: 3000,
+          disableOnInteraction: false
+        },
+        speed: 600,
+        coverflowEffect: {
+          rotate: 0,
+          stretch: 0,
+          depth: 100,
+          modifier: 1.5,
+          slideShadows: true
+        },
+        breakpoints: {
+          320: {
+            slidesPerView: 1,
+            centeredSlides: true
+          },
+          768: {
+            slidesPerView: 1.2,
+            centeredSlides: true
+          },
+          1024: {
+            slidesPerView: 2,
+            centeredSlides: true
+          }
+        }
+      });
+    });
+  }
 })();
 
 
-/* Mobile brochure click -> Download + Open Enquiry Modal */
-document.addEventListener("DOMContentLoaded", () => {
-  const brochureBtn = document.getElementById("mobileBrochureBtn");
 
-  if (!brochureBtn) return;
-
-  brochureBtn.addEventListener("click", () => {
-    /* 1️⃣ Trigger brochure download */
-    const brochureLink = document.createElement("a");
-    // 🔁 change path if needed
-    brochureLink.download = "NMIMS-Online-Brochure.pdf";
-    document.body.appendChild(brochureLink);
-    brochureLink.click();
-    brochureLink.remove();
-
-    /* 2️⃣ Open enquiry modal */
-    const enquiryModal = document.getElementById("enquiryModal");
-    if (enquiryModal && typeof bootstrap !== "undefined") {
-      const modal = bootstrap.Modal.getOrCreateInstance(enquiryModal);
-      modal.show();
-    }
-  });
-});
 

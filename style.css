@@ -1592,6 +1592,52 @@ a, button, .btn, .card, img, input, select, textarea{
   z-index: 1;
 }
 
+/* Mobile bottom sticky CTA bar (Download Brochure / Enquire Now) */
+.mobile-cta-bar{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1030; /* above page content, below modal */
+  display: flex;
+  gap: 8px;
+  padding: 10px 16px 12px;
+  background: rgba(15, 23, 42, 0.96);
+  box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.45);
+}
+
+.cta-btn{
+  flex: 1;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 14px;
+  border: 0;
+}
+
+.cta-btn-primary{
+  background: var(--grad-primary);
+  color: #ffffff;
+}
+
+.cta-btn-secondary{
+  background: #ffffff;
+  color: var(--primary-strong);
+}
+
+@media (min-width: 768px){
+  .mobile-cta-bar{
+    display: none;
+  }
+}
+
+/* Preserve readable space above mobile CTA bar */
+@media (max-width: 767.98px){
+  body{
+    padding-bottom: 80px;
+  }
+}
+
 
 
 /* Scroll reveal */
@@ -1782,103 +1828,5 @@ a, button, .btn, .card, img, input, select, textarea{
   }
 }
 
-/* ================================
-   Mobile Bottom Fixed CTA Bar
-================================ */
-
-.mobile-cta-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  z-index: 9999;
-
-  display: flex;
-  gap: 12px;
-  padding: 12px 14px;
-
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.08);
-}
-
-/* Common button style */
-.mobile-cta-bar .cta-btn {
-  flex: 1;
-  text-align: center;
-  padding: 14px 12px;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 14px;
-  text-decoration: none;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-/* Download Brochure */
-.mobile-cta-bar .brochure-btn {
-  background: #0f2a44;
-  color: #ffffff;
-}
-
-.mobile-cta-bar .brochure-btn:hover {
-  background: #091e33;
-}
-
-/* Enquire Now */
-.mobile-cta-bar .enquiry-btn {
-  background: #facc15;
-  color: #1f2937;
-}
-
-.mobile-cta-bar .enquiry-btn:hover {
-  background: #eab308;
-}
-
-/* Prevent content hiding behind CTA bar */
-@media (max-width: 767.98px) {
-  body {
-    padding-bottom: 80px;
-  }
-}
 
 
-/* 🔥 FORCE FIX: Phone input same as other fields (popup form) */
-.modal-enquiry-content .input-group-phone {
-  border-radius: 12px !important;
-  border: 1px solid rgba(15, 23, 42, 0.12) !important;
-  background: #f9fbff !important;
-  height: 40px !important;
-  display: flex;
-  align-items: center;
-}
-
-.modal-enquiry-content .input-group-phone .country-code {
-  background: #f9fbff !important;
-  border: none !important;
-  padding: 10px 14px !important;
-  font-size: 13.5px !important;
-  font-weight: 500;
-  color: #1f4bff;
-  height: 100%;
-  display: flex;
-  align-items: center;
-}
-
-.modal-enquiry-content .input-group-phone .form-control {
-  border: none !important;
-  background: transparent !important;
-  padding: 10px 14px !important;
-  font-size: 13.5px !important;
-  height: 100%;
-  box-shadow: none !important;
-}
-
-/* Focus state (same as other inputs) */
-.modal-enquiry-content .input-group-phone:focus-within {
-  border-color: rgba(31, 75, 255, 0.7) !important;
-  box-shadow: 0 0 0 3px rgba(31, 75, 255, 0.12) !important;
-}
